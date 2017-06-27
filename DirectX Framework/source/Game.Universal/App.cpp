@@ -13,6 +13,7 @@ using namespace Windows::UI::Input;
 using namespace Windows::System;
 using namespace Windows::Foundation;
 using namespace Windows::Graphics::Display;
+using namespace Windows::UI::ViewManagement;
 
 // The main function is only used to initialize our IFrameworkView class.
 [Platform::MTAThread]
@@ -167,7 +168,7 @@ namespace DirectXGame
 
 	void App::OnWindowSizeChanged(CoreWindow^ sender, WindowSizeChangedEventArgs^ args)
 	{
-		mDeviceResources->SetLogicalSize(Size(sender->Bounds.Width, sender->Bounds.Height));
+		mDeviceResources->SetLogicalSize(Size(1280, 720));
 		mMain->CreateWindowSizeDependentResources();
 	}
 

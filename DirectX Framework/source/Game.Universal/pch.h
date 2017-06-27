@@ -51,3 +51,9 @@
 #include "FieldManager.h"
 #include "MoodySprite.h"
 #include "SpriteDemoManager.h"
+
+// LuftKampf
+#include "SpriteManager.h"
+#include "GameSprite.h"
+#include "Environment.h"
+#include "Player.h"

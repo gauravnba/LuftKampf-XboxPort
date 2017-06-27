@@ -9,6 +9,7 @@ using namespace Windows::System::Threading;
 using namespace Windows::ApplicationModel::Core;
 using namespace Windows::UI::Core;
 using namespace Concurrency;
+using namespace LuftKampf;
 
 namespace DirectXGame
 {
@@ -35,22 +36,17 @@ namespace DirectXGame
 		mGamePad = make_shared<GamePadComponent>(mDeviceResources);
 		mComponents.push_back(mGamePad);
 
+		auto spriteManager = make_shared<SpriteManager>(mDeviceResources, camera);
+		mComponents.push_back(spriteManager);
+
+		auto player = make_shared<Player>(mDeviceResources);
+		mComponents.push_back(player);
+
+		auto environment = make_shared<Environment>(mDeviceResources);
+		mComponents.push_back(environment);
+
 		auto fpsTextRenderer = make_shared<FpsTextRenderer>(mDeviceResources);
 		mComponents.push_back(fpsTextRenderer);
-
-		auto fieldManager = make_shared<FieldManager>(mDeviceResources, camera);
-		mComponents.push_back(fieldManager);
-
-		auto ballManager = make_shared<BallManager>(mDeviceResources, camera);
-		ballManager->SetActiveField(fieldManager->ActiveField());
-		mComponents.push_back(ballManager);		
-
-		const int32_t spriteRowCount = 12;
-		const int32_t spriteColumnCount = 15;
-		auto spriteDemoManager = make_shared<SpriteDemoManager>(mDeviceResources, camera, spriteRowCount, spriteColumnCount);		
-		const XMFLOAT2 center((-spriteColumnCount + 1) * SpriteDemoManager::SpriteScale.x, (-spriteRowCount + 1) * SpriteDemoManager::SpriteScale.y);
-		spriteDemoManager->SetPositon(center);
-		mComponents.push_back(spriteDemoManager);
 
 		mTimer.SetFixedTimeStep(true);
 		mTimer.SetTargetElapsedSeconds(1.0 / 60);

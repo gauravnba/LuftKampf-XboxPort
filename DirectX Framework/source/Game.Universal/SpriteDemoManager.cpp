@@ -240,7 +240,7 @@ namespace DirectXGame
 	void SpriteDemoManager::InitializeSprites()
 	{	
 		const XMFLOAT2 neighborOffset(2.0f, 2.0f);
-		for (uint32_t column = 0; column < mSpriteColumnCount; ++column)		
+		for (uint32_t column = 0; column < mSpriteColumnCount; ++column)
 		{
 			for (uint32_t row = 0; row < mSpriteRowCount; ++row)
 			{

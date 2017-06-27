@@ -32,7 +32,7 @@ namespace DirectXGame
 
 	private:
 		DirectX::XMFLOAT4X4 mTextureTransform;
-		DX::Transform2D mTransform;		
+		DX::Transform2D mTransform;
 		Moods mMood;
 		std::uint32_t mSpriteIndex;
 	};
