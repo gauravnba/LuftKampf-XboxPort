@@ -6,9 +6,8 @@ using namespace DX;
 
 namespace LuftKampf
 {
-	Projectile::Projectile(ProjectileManager& projectileManager, const Transform2D& transform, float radius, const XMFLOAT4& color, const XMFLOAT2& velocity, bool isSolid) :
-		mProjectileManager(projectileManager), mTransform(transform), mRadius(radius),
-		mColor(color), mVelocity(velocity), mIsSolid(isSolid)
+	Projectile::Projectile(const Transform2D& transform, float radius, const XMFLOAT4& color, const XMFLOAT2& velocity, bool isSolid) :
+		mTransform(transform), mRadius(radius),	mColor(color), mVelocity(velocity), mIsSolid(isSolid), mDestroy(false)
 	{
 	}
 
@@ -71,5 +70,15 @@ namespace LuftKampf
 		position.y += mVelocity.y * static_cast<float>(elapsedTime);
 
 		mTransform.SetPosition(position);
+	}
+
+	void Projectile::MarkToDestroy()
+	{
+		mDestroy = true;
+	}
+
+	bool Projectile::IsMarkedForDestruction()
+	{
+		return mDestroy;
 	}
 }

@@ -20,10 +20,10 @@ namespace LuftKampf
 	const float Player::ShootingDelay = 0.1f;
 
 	Player::Player(const shared_ptr<DX::DeviceResources>& deviceResources, const shared_ptr<KeyboardComponent>& keyboard, const shared_ptr<GamePadComponent>& gamepad, 
-		const shared_ptr<OrthographicCamera>& camera, const shared_ptr<ProjectileManager>& projectileManager) :
-		IManager(deviceResources),
+		const shared_ptr<OrthographicCamera>& camera) :
+		Manager(deviceResources),
 		mVelocity(XMFLOAT2(0.0f, 0.0f)), mHealth(100)/* Default health is 100 */, mRotation(1.57079f)/*Rotate sprite by 90 degrees at the start*/, mIsThrusting(false),
-		mKeyboard(keyboard), mGamepad(gamepad), mCamera(camera), mProjectileManager(projectileManager), mShootingDelay(0.0f)
+		mKeyboard(keyboard), mGamepad(gamepad), mCamera(camera), mShootingDelay(0.0f)
 	{
 		Transform2D playerTransform(Vector2Helper::Zero, mRotation, XMFLOAT2(PlayerWidth, PlayerHeight));
 		mSprite = make_shared<GameSprite>(2, playerTransform, L"Content\\Textures\\Airplane.png");
@@ -76,6 +76,16 @@ namespace LuftKampf
 			mVelocity.y += (Acceleration * sin(mRotation)) * deltaTime;
 		}
 
+		//Clamp rotation to 360 degrees.
+		if (mSprite->mTransform.Rotation() >= 6.28318f)
+		{
+			mSprite->mTransform.SetRotation(mSprite->mTransform.Rotation() - 6.28318f);
+		}
+		else if (mSprite->mTransform.Rotation() <= -6.28318f)
+		{
+			mSprite->mTransform.SetRotation(mSprite->mTransform.Rotation() + 6.28318f);
+		}
+
 		//Set position in frame
 		XMFLOAT2 position = mSprite->mTransform.Position();
 		position.x += (mVelocity.x * deltaTime);
@@ -115,7 +125,6 @@ namespace LuftKampf
 		// Check for Thrust application
 		if(mKeyboard->WasKeyDown(Keys::Up) || (mGamepad->WasButtonDown(GamePadButtons::RightShoulder)))
 		{
-			UNREFERENCED_PARAMETER(deltaTime);
 			mIsThrusting = true;
 		}
 		else
@@ -128,7 +137,7 @@ namespace LuftKampf
 		{
 			if (mShootingDelay >= ShootingDelay)
 			{
-				mProjectileManager->CreateProjectile(true, mSprite->mTransform);
+				ProjectileManager::CreateProjectile(true, mSprite->mTransform);
 				mShootingDelay = 0.0f;
 			}
 			else

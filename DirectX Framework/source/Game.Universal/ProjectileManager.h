@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DrawableGameComponent.h"
+#include "Manager.h"
 #include <DirectXMath.h>
 #include <vector>
 
@@ -19,7 +20,7 @@ namespace LuftKampf
 	public:
 		ProjectileManager(const std::shared_ptr<DX::DeviceResources>& deviceResources, const std::shared_ptr<DX::Camera>& camera);
 
-		void CreateProjectile(bool isPlayerProjectile, const DX::Transform2D& transform);
+		static void CreateProjectile(bool isPlayerProjectile, const DX::Transform2D& transform);
 
 		virtual void CreateDeviceDependentResources() override;
 		virtual void ReleaseDeviceDependentResources() override;
@@ -49,7 +50,7 @@ namespace LuftKampf
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mVSCBufferPerObject;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mPSCBufferPerObject;
 		bool mLoadingComplete;
-		std::vector<std::shared_ptr<Projectile>> mProjectiles;
+		static std::vector<std::shared_ptr<Projectile>> mProjectiles;
 	};
 }
 

@@ -8,7 +8,7 @@ using namespace DirectX;
 namespace LuftKampf
 {
 	Environment::Environment(const shared_ptr<DX::DeviceResources>& deviceResources) :
-		IManager(deviceResources)
+		Manager(deviceResources)
 	{
 		Transform2D tempTransform;
 

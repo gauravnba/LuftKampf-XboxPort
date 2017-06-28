@@ -42,8 +42,11 @@ namespace DirectXGame
 		auto projectileManager = make_shared<ProjectileManager>(mDeviceResources, camera);
 		mComponents.push_back(projectileManager);
 
-		auto player = make_shared<Player>(mDeviceResources, mKeyboard, mGamePad, camera, projectileManager);
+		auto player = make_shared<Player>(mDeviceResources, mKeyboard, mGamePad, camera);
 		mComponents.push_back(player);
+
+		auto enemyManager = make_shared<EnemyManager>(mDeviceResources);
+		mComponents.push_back(enemyManager);
 
 		auto environment = make_shared<Environment>(mDeviceResources);
 		mComponents.push_back(environment);

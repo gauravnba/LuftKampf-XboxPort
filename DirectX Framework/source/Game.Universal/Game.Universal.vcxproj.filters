@@ -41,9 +41,11 @@
     <ClCompile Include="GameSprite.cpp" />
     <ClCompile Include="Environment.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="IManager.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="ProjectileManager.cpp" />
+    <ClCompile Include="EnemyManager.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Manager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
@@ -53,21 +55,17 @@
     <ClInclude Include="SpriteManager.h" />
     <ClInclude Include="GameSprite.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="IManager.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="ProjectileManager.h" />
+    <ClInclude Include="EnemyManager.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Manager.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\StoreLogo.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Content\Textures\snoods_default.png">
-      <Filter>Content\Textures</Filter>
-    </Image>
     <Image Include="Content\Textures\Airplane.png">
-      <Filter>Content\Textures</Filter>
-    </Image>
-    <Image Include="Content\Textures\Airplane_wings.png">
       <Filter>Content\Textures</Filter>
     </Image>
     <Image Include="Content\Textures\Clouds.png">
@@ -79,13 +77,7 @@
     <Image Include="Content\Textures\Sea.png">
       <Filter>Content\Textures</Filter>
     </Image>
-    <Image Include="Content\Textures\SplashScreen.png">
-      <Filter>Content\Textures</Filter>
-    </Image>
     <Image Include="Content\Textures\Stratosphere.png">
-      <Filter>Content\Textures</Filter>
-    </Image>
-    <Image Include="Content\Textures\Thrust.png">
       <Filter>Content\Textures</Filter>
     </Image>
   </ItemGroup>

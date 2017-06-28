@@ -17,7 +17,7 @@ namespace LuftKampf
 	class Projectile final
 	{
 	public:
-		Projectile(ProjectileManager& projectileManager, const DX::Transform2D& transform, float radius, const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(&DirectX::Colors::White[0]), const DirectX::XMFLOAT2& velocity = DX::Vector2Helper::Zero, bool isSolid = false);
+		Projectile(const DX::Transform2D& transform, float radius, const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(&DirectX::Colors::White[0]), const DirectX::XMFLOAT2& velocity = DX::Vector2Helper::Zero, bool isSolid = false);
 		Projectile(const Projectile&) = default;
 		Projectile& operator=(const Projectile&) = delete;
 		Projectile(Projectile&&) = default;
@@ -41,13 +41,15 @@ namespace LuftKampf
 
 		void Update(const DX::StepTimer& timer);
 
-	private:
+		void MarkToDestroy();
+		bool IsMarkedForDestruction();
 
-		ProjectileManager& mProjectileManager;
+	private:
 		DX::Transform2D mTransform;
 		float mRadius;
 		DirectX::XMFLOAT4 mColor;
 		DirectX::XMFLOAT2 mVelocity;
 		bool mIsSolid;
+		bool mDestroy;
 	};
 }

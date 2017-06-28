@@ -51,3 +51,5 @@
 #include "Player.h"
 #include "Projectile.h"
 #include "ProjectileManager.h"
+#include "EnemyManager.h"
+#include "Enemy.h"

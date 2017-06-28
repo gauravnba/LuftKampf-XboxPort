@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IManager.h"
+#include "Manager.h"
 #include <functional>
 
 namespace DX
@@ -16,7 +16,7 @@ namespace LuftKampf
 	struct GameSprite;
 	class ProjectileManager;
 
-	class Player final : public IManager
+	class Player final : public Manager
 	{
 		static const float PlayerWidth;
 		static const float PlayerHeight;
@@ -32,7 +32,7 @@ namespace LuftKampf
 
 	public:
 		Player(const std::shared_ptr<DX::DeviceResources>& deviceResources, const std::shared_ptr<DX::KeyboardComponent>& keyboard, 
-			const std::shared_ptr<DX::GamePadComponent>& gamepad, const std::shared_ptr<DX::OrthographicCamera>& camera, const std::shared_ptr<ProjectileManager>& projectileManager);
+			const std::shared_ptr<DX::GamePadComponent>& gamepad, const std::shared_ptr<DX::OrthographicCamera>& camera);
 		Player(const Player&) = delete;
 		Player& operator=(const Player&) = delete;
 		Player(Player&&) = delete;
@@ -58,6 +58,5 @@ namespace LuftKampf
 		std::shared_ptr<DX::KeyboardComponent> mKeyboard;
 		std::shared_ptr<DX::GamePadComponent> mGamepad;
 		std::shared_ptr<DX::OrthographicCamera> mCamera;
-		std::shared_ptr<ProjectileManager> mProjectileManager;
 	};
 }

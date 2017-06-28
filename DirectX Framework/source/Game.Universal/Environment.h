@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IManager.h"
+#include "Manager.h"
 #include <cstdint>
 
 namespace DX
@@ -12,7 +12,7 @@ namespace LuftKampf
 {
 	struct GameSprite;
 
-	class Environment final : public IManager
+	class Environment final : public Manager
 	{
 	public:
 		Environment(const std::shared_ptr<DX::DeviceResources>& deviceResources);

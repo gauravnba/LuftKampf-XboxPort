@@ -8,6 +8,8 @@ using namespace DX;
 
 namespace LuftKampf
 {
+	vector<shared_ptr<Projectile>> ProjectileManager::mProjectiles;
+
 	const uint32_t ProjectileManager::CircleResolution = 32;
 	const uint32_t ProjectileManager::LineCircleVertexCount = ProjectileManager::CircleResolution + 2;
 	const uint32_t ProjectileManager::SolidCircleVertexCount = (ProjectileManager::CircleResolution + 1) * 2;
@@ -18,8 +20,7 @@ namespace LuftKampf
 	const float ProjectileManager::ProjectileVelocity = 1200.0f;
 
 	ProjectileManager::ProjectileManager(const shared_ptr<DX::DeviceResources>& deviceResources, const shared_ptr<Camera>& camera) :
-		DrawableGameComponent(deviceResources, camera),
-		mLoadingComplete(false)
+		DrawableGameComponent(deviceResources, camera), mLoadingComplete(false)
 	{
 		CreateDeviceDependentResources();
 	}
@@ -29,11 +30,11 @@ namespace LuftKampf
 		XMFLOAT2 velocity(ProjectileVelocity * cos(transform.Rotation()), ProjectileVelocity * sin(transform.Rotation()));
 		if (isPlayerProjectile)
 		{
-			mProjectiles.emplace_back(make_shared<Projectile>(*this, transform, ProjectileRadius, PlayerProjectileColor, velocity, isPlayerProjectile));
+			mProjectiles.emplace_back(make_shared<Projectile>(transform, ProjectileRadius, PlayerProjectileColor, velocity, isPlayerProjectile));
 		}
 		else
 		{
-			mProjectiles.emplace_back(make_shared<Projectile>(*this, transform, ProjectileRadius, EnemyProjectileColor, velocity, !isPlayerProjectile));
+			mProjectiles.emplace_back(make_shared<Projectile>(transform, ProjectileRadius, EnemyProjectileColor, velocity, !isPlayerProjectile));
 		}
 	}
 
@@ -120,8 +121,33 @@ namespace LuftKampf
 
 	void ProjectileManager::Update(const StepTimer& timer)
 	{
-		for (const auto& projectile : mProjectiles)
+		//Partition the projectiles marked for destruction and then remove them.
+		uint32_t destroyAfterThis = static_cast<uint32_t>(mProjectiles.size());
+		for (uint32_t i = 0; i < destroyAfterThis; ++i)
 		{
+			if (mProjectiles[i]->IsMarkedForDestruction())
+			{
+				//Get index of the first event from the send that is not expired.
+				while ((destroyAfterThis > i) && (mProjectiles[--destroyAfterThis]->IsMarkedForDestruction()));
+				shared_ptr<Projectile> temp = mProjectiles[i];
+				mProjectiles[i] = mProjectiles[destroyAfterThis];
+				mProjectiles[destroyAfterThis] = temp;
+			}
+		}
+
+		mProjectiles.erase(mProjectiles.begin() + destroyAfterThis, mProjectiles.end());
+
+		for (auto& projectile : mProjectiles)
+		{
+			// Check if Projectiles are out of bounds.
+			if ((projectile->Transform().Position().x > (mCamera->Position().x + 1280.0f)) 
+				|| (projectile->Transform().Position().x < (mCamera->Position().x - 1280.0f))
+				|| (projectile->Transform().Position().y > (mCamera->Position().y + 720.0f))
+				|| (projectile->Transform().Position().y < (mCamera->Position().y - 720.0f)))
+			{
+				projectile->MarkToDestroy();
+			}
+
 			projectile->Update(timer);
 		}
 	}
