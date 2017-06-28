@@ -29,7 +29,7 @@ namespace DirectXGame
 		mKeyboard->Keyboard()->SetWindow(window);
 		mComponents.push_back(mKeyboard);
 
-		mMouse = make_shared<MouseComponent>(mDeviceResources);		
+		mMouse = make_shared<MouseComponent>(mDeviceResources);
 		mMouse->Mouse()->SetWindow(window);
 		mComponents.push_back(mMouse);
 
@@ -39,7 +39,10 @@ namespace DirectXGame
 		auto spriteManager = make_shared<SpriteManager>(mDeviceResources, camera);
 		mComponents.push_back(spriteManager);
 
-		auto player = make_shared<Player>(mDeviceResources);
+		auto projectileManager = make_shared<ProjectileManager>(mDeviceResources, camera);
+		mComponents.push_back(projectileManager);
+
+		auto player = make_shared<Player>(mDeviceResources, mKeyboard, mGamePad, camera, projectileManager);
 		mComponents.push_back(player);
 
 		auto environment = make_shared<Environment>(mDeviceResources);
@@ -106,10 +109,11 @@ namespace DirectXGame
 
 		// Reset render targets to the screen.
 		ID3D11RenderTargetView *const targets[1] = { mDeviceResources->GetBackBufferRenderTargetView() };
-		context->OMSetRenderTargets(1, targets, mDeviceResources->GetDepthStencilView());
+		//context->OMSetRenderTargets(1, targets, mDeviceResources->GetDepthStencilView());
+		context->OMSetRenderTargets(1, targets, nullptr);
 
 		// Clear the back buffer and depth stencil view.
-		context->ClearRenderTargetView(mDeviceResources->GetBackBufferRenderTargetView(), DirectX::Colors::Black);
+		context->ClearRenderTargetView(mDeviceResources->GetBackBufferRenderTargetView(), DirectX::Colors::Khaki);
 		context->ClearDepthStencilView(mDeviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		for (auto& component : mComponents)

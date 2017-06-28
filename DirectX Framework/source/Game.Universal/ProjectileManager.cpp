@@ -1,35 +1,43 @@
 #include "pch.h"
-#include "BallManager.h"
-#include "Ball.h"
+#include "ProjectileManager.h"
+#include "Projectile.h"
 
 using namespace std;
 using namespace DirectX;
 using namespace DX;
 
-namespace DirectXGame
+namespace LuftKampf
 {
-	const uint32_t BallManager::CircleResolution = 32;
-	const uint32_t BallManager::LineCircleVertexCount = BallManager::CircleResolution + 2;
-	const uint32_t BallManager::SolidCircleVertexCount = (BallManager::CircleResolution + 1) * 2;
+	const uint32_t ProjectileManager::CircleResolution = 32;
+	const uint32_t ProjectileManager::LineCircleVertexCount = ProjectileManager::CircleResolution + 2;
+	const uint32_t ProjectileManager::SolidCircleVertexCount = (ProjectileManager::CircleResolution + 1) * 2;
 
-	BallManager::BallManager(const shared_ptr<DX::DeviceResources>& deviceResources, const shared_ptr<Camera>& camera) :
+	const float ProjectileManager::ProjectileRadius = 0.1f;
+	const XMFLOAT4 ProjectileManager::PlayerProjectileColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	const XMFLOAT4 ProjectileManager::EnemyProjectileColor = XMFLOAT4(0.5333f, 0.0f, 1.0f, 0.08235f);
+	const float ProjectileManager::ProjectileVelocity = 1200.0f;
+
+	ProjectileManager::ProjectileManager(const shared_ptr<DX::DeviceResources>& deviceResources, const shared_ptr<Camera>& camera) :
 		DrawableGameComponent(deviceResources, camera),
 		mLoadingComplete(false)
 	{
 		CreateDeviceDependentResources();
 	}
 
-	std::shared_ptr<Field> BallManager::ActiveField() const
+	void ProjectileManager::CreateProjectile(bool isPlayerProjectile, const Transform2D& transform)
 	{
-		return mActiveField;
+		XMFLOAT2 velocity(ProjectileVelocity * cos(transform.Rotation()), ProjectileVelocity * sin(transform.Rotation()));
+		if (isPlayerProjectile)
+		{
+			mProjectiles.emplace_back(make_shared<Projectile>(*this, transform, ProjectileRadius, PlayerProjectileColor, velocity, isPlayerProjectile));
+		}
+		else
+		{
+			mProjectiles.emplace_back(make_shared<Projectile>(*this, transform, ProjectileRadius, EnemyProjectileColor, velocity, !isPlayerProjectile));
+		}
 	}
 
-	void BallManager::SetActiveField(const shared_ptr<Field>& field)
-	{
-		mActiveField = field;
-	}
-
-	void BallManager::CreateDeviceDependentResources()
+	void ProjectileManager::CreateDeviceDependentResources()
 	{
 		auto loadVSTask = ReadDataAsync(L"ShapeRendererVS.cso");
 		auto loadPSTask = ReadDataAsync(L"ShapeRendererPS.cso");
@@ -87,19 +95,18 @@ namespace DirectXGame
 			);
 		});
 
-		auto createVerticesAndBallsTask = (createPSTask && createVSTask).then([this]() {
+		auto createVerticesAndProjectilesTask = (createPSTask && createVSTask).then([this]() {
 			InitializeLineVertices();
 			InitializeTriangleVertices();
-			InitializeBalls();
 		});
 
 		// Once the cube is loaded, the object is ready to be rendered.
-		createVerticesAndBallsTask.then([this]() {
+		createVerticesAndProjectilesTask.then([this]() {
 			mLoadingComplete = true;
 		});
 	}
 
-	void BallManager::ReleaseDeviceDependentResources()
+	void ProjectileManager::ReleaseDeviceDependentResources()
 	{
 		mLoadingComplete = false;
 		mVertexShader.Reset();
@@ -111,15 +118,15 @@ namespace DirectXGame
 		mPSCBufferPerObject.Reset();
 	}
 
-	void BallManager::Update(const StepTimer& timer)
+	void ProjectileManager::Update(const StepTimer& timer)
 	{
-		for (const auto& ball : mBalls)
+		for (const auto& projectile : mProjectiles)
 		{
-			ball->Update(timer);
+			projectile->Update(timer);
 		}
 	}
 
-	void BallManager::Render(const StepTimer & timer)
+	void ProjectileManager::Render(const StepTimer & timer)
 	{
 		UNREFERENCED_PARAMETER(timer);
 		
@@ -138,20 +145,20 @@ namespace DirectXGame
 		direct3DDeviceContext->VSSetConstantBuffers(0, 1, mVSCBufferPerObject.GetAddressOf());
 		direct3DDeviceContext->PSSetConstantBuffers(0, 1, mPSCBufferPerObject.GetAddressOf());
 
-		for (const auto& ball : mBalls)
+		for (const auto& projectile : mProjectiles)
 		{
-			if (ball->IsSolid())
+			if (projectile->IsSolid())
 			{
-				DrawSolidBall(*ball);
+				DrawSolidProjectile(*projectile);
 			}
 			else
 			{
-				DrawBall(*ball);
+				DrawProjectile(*projectile);
 			}
 		}
 	}
 
-	void BallManager::DrawBall(const Ball& ball)
+	void ProjectileManager::DrawProjectile(const Projectile& projectile)
 	{
 		ID3D11DeviceContext* direct3DDeviceContext = mDeviceResources->GetD3DDeviceContext();
 		direct3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
@@ -160,15 +167,15 @@ namespace DirectXGame
 		static const UINT offset = 0;
 		direct3DDeviceContext->IASetVertexBuffers(0, 1, mLineVertexBuffer.GetAddressOf(), &stride, &offset);
 
-		const XMMATRIX wvp = XMMatrixTranspose(XMMatrixScaling(ball.Radius(), ball.Radius(), ball.Radius()) * ball.Transform().WorldMatrix() * mCamera->ViewProjectionMatrix());
+		const XMMATRIX wvp = XMMatrixTranspose(XMMatrixScaling(projectile.Radius(), projectile.Radius(), projectile.Radius()) * projectile.Transform().WorldMatrix() * mCamera->ViewProjectionMatrix());
 		direct3DDeviceContext->UpdateSubresource(mVSCBufferPerObject.Get(), 0, nullptr, reinterpret_cast<const float*>(wvp.r), 0, 0);
 
-		direct3DDeviceContext->UpdateSubresource(mPSCBufferPerObject.Get(), 0, nullptr, &ball.Color(), 0, 0);
+		direct3DDeviceContext->UpdateSubresource(mPSCBufferPerObject.Get(), 0, nullptr, &projectile.Color(), 0, 0);
 
 		direct3DDeviceContext->Draw(LineCircleVertexCount, 0);
 	}
 
-	void BallManager::DrawSolidBall(const Ball & ball)
+	void ProjectileManager::DrawSolidProjectile(const Projectile & projectile)
 	{
 		ID3D11DeviceContext* direct3DDeviceContext = mDeviceResources->GetD3DDeviceContext();
 		direct3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
@@ -177,15 +184,15 @@ namespace DirectXGame
 		static const UINT offset = 0;
 		direct3DDeviceContext->IASetVertexBuffers(0, 1, mTriangleVertexBuffer.GetAddressOf(), &stride, &offset);
 
-		const XMMATRIX wvp = XMMatrixTranspose(XMMatrixScaling(ball.Radius(), ball.Radius(), ball.Radius()) * ball.Transform().WorldMatrix() * mCamera->ViewProjectionMatrix());
+		const XMMATRIX wvp = XMMatrixTranspose(XMMatrixScaling(projectile.Radius(), projectile.Radius(), projectile.Radius()) * projectile.Transform().WorldMatrix() * mCamera->ViewProjectionMatrix());
 		direct3DDeviceContext->UpdateSubresource(mVSCBufferPerObject.Get(), 0, nullptr, reinterpret_cast<const float*>(wvp.r), 0, 0);
 
-		direct3DDeviceContext->UpdateSubresource(mPSCBufferPerObject.Get(), 0, nullptr, &ball.Color(), 0, 0);
+		direct3DDeviceContext->UpdateSubresource(mPSCBufferPerObject.Get(), 0, nullptr, &projectile.Color(), 0, 0);
 
 		direct3DDeviceContext->Draw(SolidCircleVertexCount, 0);
 	}
 
-	void BallManager::InitializeLineVertices()
+	void ProjectileManager::InitializeLineVertices()
 	{
 		const float increment = XM_2PI / CircleResolution;
 
@@ -217,7 +224,7 @@ namespace DirectXGame
 		ThrowIfFailed(mDeviceResources->GetD3DDevice()->CreateBuffer(&vertexBufferDesc, &vertexSubResourceData, mLineVertexBuffer.ReleaseAndGetAddressOf()));
 	}
 
-	void BallManager::InitializeTriangleVertices()
+	void ProjectileManager::InitializeTriangleVertices()
 	{
 		const float increment = XM_2PI / CircleResolution;
 		const XMFLOAT4 center(0.0f, 0.0f, 0.0f, 1.0f);
@@ -232,7 +239,7 @@ namespace DirectXGame
 			vertex.Position.z = 0.0f;
 			vertex.Position.w = 1.0f;
 
-			vertices.push_back(vertex);			
+			vertices.push_back(vertex);
 			vertices.push_back(center);
 		}
 
@@ -246,33 +253,5 @@ namespace DirectXGame
 		D3D11_SUBRESOURCE_DATA vertexSubResourceData = { 0 };
 		vertexSubResourceData.pSysMem = &vertices[0];
 		ThrowIfFailed(mDeviceResources->GetD3DDevice()->CreateBuffer(&vertexBufferDesc, &vertexSubResourceData, mTriangleVertexBuffer.ReleaseAndGetAddressOf()));
-	}
-
-	void BallManager::InitializeBalls()
-	{
-		random_device device;
-		default_random_engine generator(device());
-
-		const float minVelocity = -30.0f;
-		const float maxVelocity = 30.0f;
-		uniform_real_distribution<float> velocityDistribution(minVelocity, maxVelocity);
-		uniform_int_distribution<uint32_t> isSolidDistribution(0, 1);
-		
-		uniform_real_distribution<float> rotationDistribution(0, XM_2PI);
-
-		const float minRadius = 0.1f;
-		const float maxRadius = 5.0f;
-		uniform_real_distribution<float> radiusDistribution(minRadius, maxRadius);
-
-		const uint32_t ballCount = 30;
-		for (uint32_t i = 0; i < ballCount; ++i)
-		{			
-			const float rotation = rotationDistribution(generator);
-			const float radius = radiusDistribution(generator);
-			const XMFLOAT4 color = ColorHelper::RandomColor();
-			const XMFLOAT2 velocity(velocityDistribution(generator), velocityDistribution(generator));
-			const bool isSolid = isSolidDistribution(generator) < 1;
-			mBalls.emplace_back(make_shared<Ball>(*this, Transform2D(Vector2Helper::Zero, rotation), radius, color, velocity, isSolid));
-		}
 	}
 }

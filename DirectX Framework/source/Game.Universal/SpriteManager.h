@@ -45,7 +45,7 @@ namespace LuftKampf
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> mInputLayout;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mVertexBuffer;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mIndexBuffer;
-		Microsoft::WRL::ComPtr<ID3D11Buffer> mVSCBufferPerObject;		
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mVSCBufferPerObject;
 		Microsoft::WRL::ComPtr<ID3D11BlendState> mAlphaBlending;
 		VSCBufferPerObject mVSCBufferPerObjectData;
 		std::uint32_t mIndexCount;

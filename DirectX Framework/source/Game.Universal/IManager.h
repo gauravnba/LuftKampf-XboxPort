@@ -11,6 +11,6 @@ namespace LuftKampf
 		IManager(const std::shared_ptr<DX::DeviceResources>& deviceResources);
 
 	protected:
-		std::unordered_map<std::string, IManager*> mManagerMap;
+		static std::unordered_map<std::string, IManager*> mManagerMap;
 	};
 }

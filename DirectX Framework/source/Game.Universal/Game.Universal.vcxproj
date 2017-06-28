@@ -244,7 +244,6 @@
     <Image Include="Content\Textures\Airplane_wings.png" />
     <Image Include="Content\Textures\Clouds.png" />
     <Image Include="Content\Textures\Enemy.png" />
-    <Image Include="Content\Textures\Environment.png" />
     <Image Include="Content\Textures\Sea.png" />
     <Image Include="Content\Textures\snoods_default.png" />
     <Image Include="Content\Textures\SplashScreen.png" />
@@ -253,27 +252,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
-    <ClInclude Include="Ball.h" />
-    <ClInclude Include="BallManager.h" />
+    <ClInclude Include="Projectile.h" />
+    <ClInclude Include="ProjectileManager.h" />
     <ClInclude Include="Environment.h" />
-    <ClInclude Include="Field.h" />
-    <ClInclude Include="FieldManager.h" />
     <ClInclude Include="GameMain.h" />
     <ClInclude Include="GameSprite.h" />
     <ClInclude Include="IManager.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="MoodySprite.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="SpriteDemoManager.h" />
     <ClInclude Include="SpriteManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
-    <ClCompile Include="Ball.cpp" />
-    <ClCompile Include="BallManager.cpp" />
+    <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="ProjectileManager.cpp" />
     <ClCompile Include="Environment.cpp" />
-    <ClCompile Include="Field.cpp" />
-    <ClCompile Include="FieldManager.cpp" />
     <ClCompile Include="GameMain.cpp" />
     <ClCompile Include="GameSprite.cpp" />
     <ClCompile Include="IManager.cpp" />
@@ -285,9 +278,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="MoodySprite.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="SpriteDemoManager.cpp" />
     <ClCompile Include="SpriteManager.cpp" />
   </ItemGroup>
   <ItemGroup>

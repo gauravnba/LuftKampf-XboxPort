@@ -44,16 +44,10 @@
 #include "MouseComponent.h"
 #include "GamePadComponent.h"
 
-// Local
-#include "Ball.h"
-#include "BallManager.h"
-#include "Field.h"
-#include "FieldManager.h"
-#include "MoodySprite.h"
-#include "SpriteDemoManager.h"
-
 // LuftKampf
 #include "SpriteManager.h"
 #include "GameSprite.h"
 #include "Environment.h"
 #include "Player.h"
+#include "Projectile.h"
+#include "ProjectileManager.h"

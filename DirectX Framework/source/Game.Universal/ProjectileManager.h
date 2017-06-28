@@ -4,18 +4,22 @@
 #include <DirectXMath.h>
 #include <vector>
 
-namespace DirectXGame
+namespace DX 
 {
-	class Ball;
+	class Transform2D;
+}
+
+namespace LuftKampf
+{
+	class Projectile;
 	class Field;
 
-	class BallManager final : public DX::DrawableGameComponent
+	class ProjectileManager final : public DX::DrawableGameComponent
 	{
 	public:
-		BallManager(const std::shared_ptr<DX::DeviceResources>& deviceResources, const std::shared_ptr<DX::Camera>& camera);
+		ProjectileManager(const std::shared_ptr<DX::DeviceResources>& deviceResources, const std::shared_ptr<DX::Camera>& camera);
 
-		std::shared_ptr<Field> ActiveField() const;
-		void SetActiveField(const std::shared_ptr<Field>& field);
+		void CreateProjectile(bool isPlayerProjectile, const DX::Transform2D& transform);
 
 		virtual void CreateDeviceDependentResources() override;
 		virtual void ReleaseDeviceDependentResources() override;
@@ -25,13 +29,17 @@ namespace DirectXGame
 	private:
 		void InitializeLineVertices();
 		void InitializeTriangleVertices();
-		void InitializeBalls();
-		void DrawBall(const Ball& ball);
-		void DrawSolidBall(const Ball& ball);
+		void DrawProjectile(const Projectile& projectile);
+		void DrawSolidProjectile(const Projectile& projectile);
 
 		static const std::uint32_t CircleResolution;
 		static const std::uint32_t LineCircleVertexCount;
 		static const std::uint32_t SolidCircleVertexCount;
+
+		static const float ProjectileRadius;
+		static const DirectX::XMFLOAT4 PlayerProjectileColor;
+		static const DirectX::XMFLOAT4 EnemyProjectileColor;
+		static const float ProjectileVelocity;
 
 		Microsoft::WRL::ComPtr<ID3D11VertexShader> mVertexShader;
 		Microsoft::WRL::ComPtr<ID3D11PixelShader> mPixelShader;
@@ -41,8 +49,7 @@ namespace DirectXGame
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mVSCBufferPerObject;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mPSCBufferPerObject;
 		bool mLoadingComplete;
-		std::vector<std::shared_ptr<Ball>> mBalls;
-		std::shared_ptr<Field> mActiveField;
+		std::vector<std::shared_ptr<Projectile>> mProjectiles;
 	};
 }
 

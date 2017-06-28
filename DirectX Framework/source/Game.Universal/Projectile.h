@@ -10,19 +10,19 @@ namespace DX
 	class StepTimer;
 }
 
-namespace DirectXGame
+namespace LuftKampf
 {
-	class BallManager;
+	class ProjectileManager;
 
-	class Ball final
+	class Projectile final
 	{
 	public:
-		Ball(BallManager& ballManager, const DX::Transform2D& transform, float radius, const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(&DirectX::Colors::White[0]), const DirectX::XMFLOAT2& velocity = DX::Vector2Helper::Zero, bool isSolid = false);
-		Ball(const Ball&) = default;
-		Ball& operator=(const Ball&) = delete;
-		Ball(Ball&&) = default;
-		Ball& operator=(Ball&&) = default;
-		~Ball() = default;
+		Projectile(ProjectileManager& projectileManager, const DX::Transform2D& transform, float radius, const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(&DirectX::Colors::White[0]), const DirectX::XMFLOAT2& velocity = DX::Vector2Helper::Zero, bool isSolid = false);
+		Projectile(const Projectile&) = default;
+		Projectile& operator=(const Projectile&) = delete;
+		Projectile(Projectile&&) = default;
+		Projectile& operator=(Projectile&&) = default;
+		~Projectile() = default;
 
 		const DX::Transform2D& Transform() const;
 		void SetTransform(const DX::Transform2D& transform);
@@ -42,9 +42,8 @@ namespace DirectXGame
 		void Update(const DX::StepTimer& timer);
 
 	private:
-		void CheckForFieldCollision();
 
-		BallManager& mBallManager;
+		ProjectileManager& mProjectileManager;
 		DX::Transform2D mTransform;
 		float mRadius;
 		DirectX::XMFLOAT4 mColor;
