@@ -76,13 +76,13 @@ namespace LuftKampf
 		}
 
 		// Clamp rotation to 360 degrees.
-		if (mSprite->mTransform.Rotation() >= 6.28318f)
+		if (mSprite->mTransform.Rotation() >= DirectX::XM_2PI)
 		{
-			mSprite->mTransform.SetRotation(mSprite->mTransform.Rotation() - 6.28318f);
+			mSprite->mTransform.SetRotation(mSprite->mTransform.Rotation() - DirectX::XM_2PI);
 		}
-		else if (mSprite->mTransform.Rotation() <= -6.28318f)
+		else if (mSprite->mTransform.Rotation() <= -DirectX::XM_2PI)
 		{
-			mSprite->mTransform.SetRotation(mSprite->mTransform.Rotation() + 6.28318f);
+			mSprite->mTransform.SetRotation(mSprite->mTransform.Rotation() + DirectX::XM_2PI);
 		}
 	}
 }
